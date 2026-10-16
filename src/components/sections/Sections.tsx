@@ -6,6 +6,10 @@ import { AchievementItem } from "@/components/achievements/AchievementItem";
 import { featuredProjects, projects, skills, experience, education, achievements, site } from "@/lib/data";
 import { socialLinks } from "@/lib/config";
 
+export { OpenSourceSection } from "./OpenSourceSection";
+export { GitHubSection } from "./GitHubSection";
+export { LeetCodeSection } from "./LeetCodeSection";
+
 export function EmptyProjects() {
   return <p className="text-muted">Projects will appear here once they are added to <code className="font-mono text-sm">src/data/projects.json</code>.</p>;
 }
@@ -85,7 +89,7 @@ export function AchievementsSection() {
   })).filter((g) => g.items.length > 0);
 
   return (
-    <Section id="achievements" title="Verified achievements">
+    <Section id="achievements" title="Achievements">
       <div className="space-y-10">
         {groups.map((group) => {
           const Icon = group.icon;

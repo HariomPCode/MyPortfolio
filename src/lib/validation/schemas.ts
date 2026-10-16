@@ -51,3 +51,18 @@ export const educationSchema = z.array(z.object({ id: text, degree: text, instit
 export const achievementCategory = z.enum(["Open source", "Competitions", "Problem solving"]);
 export const achievementSchema = z.object({ id: text, title: text, detail: text, category: achievementCategory, url: optionalUrl });
 export const achievementsSchema = z.array(achievementSchema);
+
+export const openSourceOrgSchema = z.object({
+  id: text,
+  name: text,
+  handle: text,
+  url: z.url(),
+  avatar: z.string().startsWith("/"),
+  contributions: z.number().int().positive(),
+  contributionCount: z.number().int().positive().optional(),
+  description: z.string().optional(),
+});
+export const openSourceOrgsSchema = z.array(openSourceOrgSchema);
+export const openSourceContributionSchema = openSourceOrgSchema;
+export const openSourceContributionsSchema = openSourceOrgsSchema;
+

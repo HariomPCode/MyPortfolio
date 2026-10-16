@@ -6,12 +6,20 @@
     "tagline": "Online judge that runs untrusted code in isolated Docker containers.",
     "description": "A full-stack online judge for function-signature problems. Users submit JavaScript, Java, or Python; language-specific BullMQ workers grade each submission in a per-submission Docker sandbox and store the verdict.",
     "category": "Backend / Developer platform",
-    "status": "in-development",
+    "status": "completed",
     "featured": true,
     "order": 1,
     "year": "2026",
     "role": "Designed and built the system",
-    "technologies": ["TypeScript", "Next.js", "Express", "MongoDB", "Redis", "BullMQ", "Docker"],
+    "technologies": [
+      "TypeScript",
+      "Next.js",
+      "Express",
+      "MongoDB",
+      "Redis",
+      "BullMQ",
+      "Docker"
+    ],
     "images": [],
     "links": { "github": "https://github.com/HariomPCode/koder" },
     "caseStudy": {
@@ -38,15 +46,36 @@
         ]
       },
       "decisions": [
-        { "title": "Queue between API and grading", "body": "Submission handling returns immediately after enqueueing, so slow or hostile code never occupies an API request." },
-        { "title": "One container per submission", "body": "The worker streams a batch of test cases to a single runner process instead of starting a container for every test case." },
-        { "title": "Namespaced sandbox directories", "body": "BullMQ job IDs repeat across queues, so sandbox paths use language plus job ID (for example python-1) and are checked to stay under the worker temp directory." },
-        { "title": "Fail-fast judging", "body": "Execution stops at the first failing test case and records that verdict." }
+        {
+          "title": "Queue between API and grading",
+          "body": "Submission handling returns immediately after enqueueing, so slow or hostile code never occupies an API request."
+        },
+        {
+          "title": "One container per submission",
+          "body": "The worker streams a batch of test cases to a single runner process instead of starting a container for every test case."
+        },
+        {
+          "title": "Namespaced sandbox directories",
+          "body": "BullMQ job IDs repeat across queues, so sandbox paths use language plus job ID (for example python-1) and are checked to stay under the worker temp directory."
+        },
+        {
+          "title": "Fail-fast judging",
+          "body": "Execution stops at the first failing test case and records that verdict."
+        }
       ],
       "challenges": [
-        { "challenge": "Containing malicious or runaway code", "solution": "Containers run with no network, all capabilities dropped, no-new-privileges, a non-root user, a read-only root filesystem, a 64 MB tmpfs, and 256 MB memory, 1 CPU, and 64 process limits." },
-        { "challenge": "Hung or slow submissions", "solution": "Watchdogs cap each test case at 2 seconds and the whole submission at 45 seconds; timed-out processes are killed and the container removed." },
-        { "challenge": "Same job ID in different queues", "solution": "Sandbox directories are keyed by language and job ID, with path validation, after a collision was found and fixed." }
+        {
+          "challenge": "Containing malicious or runaway code",
+          "solution": "Containers run with no network, all capabilities dropped, no-new-privileges, a non-root user, a read-only root filesystem, a 64 MB tmpfs, and 256 MB memory, 1 CPU, and 64 process limits."
+        },
+        {
+          "challenge": "Hung or slow submissions",
+          "solution": "Watchdogs cap each test case at 2 seconds and the whole submission at 45 seconds; timed-out processes are killed and the container removed."
+        },
+        {
+          "challenge": "Same job ID in different queues",
+          "solution": "Sandbox directories are keyed by language and job ID, with path validation, after a collision was found and fixed."
+        }
       ],
       "testing": [
         "CI-safe Node test suites for backend and workers using built-in assert (npm test)",
@@ -70,12 +99,19 @@
     "tagline": "AI assistant that turns Gmail, Calendar, and Tasks into a single task dashboard.",
     "description": "A Next.js app that connects a user's Google Calendar and Google Tasks, reads Gmail, and uses OpenAI gpt-4o-mini agents to turn emails and natural-language instructions into structured tasks and events.",
     "category": "Full-stack / AI integration",
-    "status": "in-development",
+    "status": "completed",
     "featured": true,
     "order": 2,
     "year": "2025",
     "role": "Built the application",
-    "technologies": ["Next.js", "MongoDB", "Google APIs", "OAuth 2.0", "Clerk", "OpenAI API"],
+    "technologies": [
+      "Next.js",
+      "MongoDB",
+      "Google APIs",
+      "OAuth 2.0",
+      "Clerk",
+      "OpenAI API"
+    ],
     "images": [],
     "links": { "github": "https://github.com/HariomPCode/tasky" },
     "caseStudy": {

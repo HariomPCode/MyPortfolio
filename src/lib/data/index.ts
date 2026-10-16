@@ -4,7 +4,8 @@ import experienceJson from "@/data/experience.json";
 import skillsJson from "@/data/skills.json";
 import educationJson from "@/data/education.json";
 import achievementsJson from "@/data/achievements.json";
-import { siteSchema, projectsSchema, experienceSchema, skillsSchema, educationSchema, achievementsSchema } from "@/lib/validation/schemas";
+import openSourceJson from "@/data/open-source.json";
+import { siteSchema, projectsSchema, experienceSchema, skillsSchema, educationSchema, achievementsSchema, openSourceOrgsSchema } from "@/lib/validation/schemas";
 
 // Parsing here means a malformed JSON edit fails the build with a readable error.
 export const site = siteSchema.parse(siteJson);
@@ -13,6 +14,8 @@ export const experience = experienceSchema.parse(experienceJson);
 export const skills = skillsSchema.parse(skillsJson);
 export const education = educationSchema.parse(educationJson);
 export const achievements = achievementsSchema.parse(achievementsJson);
+export const openSourceOrgs = openSourceOrgsSchema.parse(openSourceJson);
+export const openSourceContributions = openSourceOrgs;
 
 export const featuredProjects = () => { const f = projects.filter((p) => p.featured); return f.length ? f : projects; };
 export const getProject = (slug: string) => projects.find((p) => p.slug === slug);

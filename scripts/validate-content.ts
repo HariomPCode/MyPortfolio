@@ -1,12 +1,15 @@
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import { siteSchema, projectsSchema, experienceSchema, skillsSchema, educationSchema, achievementsSchema } from "../src/lib/validation/schemas";
+import { siteSchema, projectsSchema, experienceSchema, skillsSchema, educationSchema, achievementsSchema, openSourceContributionsSchema } from "../src/lib/validation/schemas";
+import { leetCodeSnapshotSchema } from "../src/lib/leetcode/schemas";
 
 const root = process.cwd();
 const load = (f: string) => JSON.parse(readFileSync(join(root, "src/data", f), "utf8"));
 const checks: [string, import("zod").ZodType, string][] = [
   ["site.json", siteSchema, "site.json"], ["projects.json", projectsSchema, "projects.json"], ["experience.json", experienceSchema, "experience.json"],
   ["skills.json", skillsSchema, "skills.json"], ["education.json", educationSchema, "education.json"], ["achievements.json", achievementsSchema, "achievements.json"],
+  ["open-source.json", openSourceContributionsSchema, "open-source.json"],
+  ["leetcode-snapshot.json", leetCodeSnapshotSchema, "leetcode-snapshot.json"],
 ];
 let failed = false;
 for (const [name, schema, file] of checks) {
@@ -15,7 +18,12 @@ for (const [name, schema, file] of checks) {
   else console.log(`✓ ${name}`);
 }
 const site = load("site.json");
-const files = [site.resumeUrl, ...load("projects.json").flatMap((p: { images?: { src: string }[] }) => (p.images ?? []).map((i) => i.src))];
+const files = [
+  site.resumeUrl,
+  "/images/portrait.jpg",
+  ...load("projects.json").flatMap((p: { images?: { src: string }[] }) => (p.images ?? []).map((i) => i.src)),
+  ...load("open-source.json").map((o: { avatar?: string }) => o.avatar),
+];
 for (const f of files) if (f?.startsWith("/") && !existsSync(join(root, "public", f))) { failed = true; console.error(`✗ Missing file public${f}`); }
 if (failed) process.exit(1);
 console.log("Content is valid.");
