@@ -1,0 +1,15 @@
+[
+  {
+    "id": "legalo",
+    "role": "Frontend Developer Intern",
+    "organization": "Legalo Technologies Services LLP (Legalo.ai)",
+    "location": "Remote",
+    "start": "Dec 2025",
+    "end": "Mar 2026",
+    "points": [
+      "Built 5+ reusable Next.js components for Legalo.ai's production platform, replacing duplicated UI and improving code reuse across features.",
+      "Refactored client-side state with Redux Toolkit, centralizing shared state across 3 components.",
+      "Implemented responsive layouts and optimized image delivery with next/image."
+    ]
+  }
+]

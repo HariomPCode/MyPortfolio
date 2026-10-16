@@ -1,0 +1,30 @@
+[
+  {
+    "id": "oss-documents",
+    "title": "Merged pull request in career-ops: read-only Documents dashboard",
+    "detail": "Discovery module and GET /api/documents endpoint that serve generated CV and cover-letter PDFs with path-containment checks, symlink protection, and descriptor-based reads. Added tests and addressed maintainer and automated review across 8 commits (PR #4958).",
+    "category": "Open source",
+    "url": "https://github.com/career-ops-hq/career-ops/pull/4958"
+  },
+  {
+    "id": "oss-cli",
+    "title": "Merged pull request in career-ops: CLI argument handling",
+    "detail": "Added --help support and made invite-match.mjs reject unknown or mistyped flags instead of ignoring them (PR #2958).",
+    "category": "Open source",
+    "url": "https://github.com/career-ops-hq/career-ops/pull/2958"
+  },
+  {
+    "id": "contests",
+    "title": "Three inter-college programming competition placements",
+    "detail": "Two 2nd Prize finishes at Tantrotsav 2024 and 2nd Runner-up at CodeSprint, Vidyavardhini's College of Engineering and Technology.",
+    "category": "Competitions",
+    "url": ""
+  },
+  {
+    "id": "leetcode",
+    "title": "LeetCode problem solving",
+    "detail": "640 problems solved across data structures and algorithms, with a contest rating of 1,686.",
+    "category": "Problem solving",
+    "url": "https://leetcode.com/u/E1Yjtr5hFH/"
+  }
+]

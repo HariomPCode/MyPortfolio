@@ -1,0 +1,96 @@
+[
+  {
+    "id": "koder",
+    "slug": "koder",
+    "name": "Koder",
+    "tagline": "Online judge that runs untrusted code in isolated Docker containers.",
+    "description": "A full-stack online judge for function-signature problems. Users submit JavaScript, Java, or Python; language-specific BullMQ workers grade each submission in a per-submission Docker sandbox and store the verdict.",
+    "category": "Backend / Developer platform",
+    "status": "in-development",
+    "featured": true,
+    "order": 1,
+    "year": "2026",
+    "role": "Designed and built the system",
+    "technologies": ["TypeScript", "Next.js", "Express", "MongoDB", "Redis", "BullMQ", "Docker"],
+    "images": [],
+    "links": { "github": "https://github.com/HariomPCode/koder" },
+    "caseStudy": {
+      "problem": "An online judge has to run code it cannot trust. Grading in the request path would block the API and let a malicious or runaway submission affect the server.",
+      "users": "Signed-in users solving problems, and administrators who manage questions and contests.",
+      "contribution": "Architecture, API, queue and worker design, sandbox hardening, and the grading pipeline. Source is on GitHub for review.",
+      "features": [
+        "Function-signature problems with JavaScript, Java, and Python submissions",
+        "Cookie-authenticated REST API under /api/v1, plus admin routes protected by an admin-role check",
+        "One BullMQ queue and worker per language (js-queue, java-queue, python-queue)",
+        "Sample and hidden test cases graded in batches of up to 50",
+        "Contests and leaderboards, and an admin interface for questions and contests",
+        "Shared @koder/shared workspace package for models, queue config, verdicts, and runner generation"
+      ],
+      "architecture": {
+        "summary": "Three kinds of process: a Next.js frontend, an Express API, and one worker per language. Redis carries jobs; MongoDB stores submissions and questions. Docker Compose supplies MongoDB and Redis for local development only.",
+        "steps": [
+          "The frontend posts { language, code } to POST /api/v1/submissions/:questionId.",
+          "The API validates the language, saves a submission as pending, and enqueues an execute job on the matching queue.",
+          "The language worker loads the submission and question, generates the runner, and starts one Docker container.",
+          "Test cases stream to the runner over a line-based Base64 protocol; Java is compiled with javac first.",
+          "The worker records the first failure, or Accepted, in MongoDB and force-removes the container.",
+          "The frontend picks up the result through an events stream, falling back to polling GET /api/v1/submissions/:submissionId."
+        ]
+      },
+      "decisions": [
+        { "title": "Queue between API and grading", "body": "Submission handling returns immediately after enqueueing, so slow or hostile code never occupies an API request." },
+        { "title": "One container per submission", "body": "The worker streams a batch of test cases to a single runner process instead of starting a container for every test case." },
+        { "title": "Namespaced sandbox directories", "body": "BullMQ job IDs repeat across queues, so sandbox paths use language plus job ID (for example python-1) and are checked to stay under the worker temp directory." },
+        { "title": "Fail-fast judging", "body": "Execution stops at the first failing test case and records that verdict." }
+      ],
+      "challenges": [
+        { "challenge": "Containing malicious or runaway code", "solution": "Containers run with no network, all capabilities dropped, no-new-privileges, a non-root user, a read-only root filesystem, a 64 MB tmpfs, and 256 MB memory, 1 CPU, and 64 process limits." },
+        { "challenge": "Hung or slow submissions", "solution": "Watchdogs cap each test case at 2 seconds and the whole submission at 45 seconds; timed-out processes are killed and the container removed." },
+        { "challenge": "Same job ID in different queues", "solution": "Sandbox directories are keyed by language and job ID, with path validation, after a collision was found and fixed." }
+      ],
+      "testing": [
+        "CI-safe Node test suites for backend and workers using built-in assert (npm test)",
+        "A Docker-based sandbox collision test exists but is run manually"
+      ],
+      "outcomes": [
+        "ISSUES.md in the repository records ISSUE-001 through ISSUE-015 as complete, including sandbox hardening and Python support"
+      ],
+      "limitations": [
+        "Docker enforces the memory cap, but out-of-memory failures surface as runtime errors rather than a Memory Limit Exceeded verdict",
+        "Auth routes have no rate limiting or account lockout",
+        "No CI workflow in the repository, and no deployed demo",
+        "Worker capacity values are host-specific and not benchmarked for production"
+      ]
+    }
+  },
+  {
+    "id": "tasky",
+    "slug": "tasky",
+    "name": "Tasky",
+    "tagline": "AI assistant that turns Gmail, Calendar, and Tasks into a single task dashboard.",
+    "description": "A Next.js app that connects a user's Google Calendar and Google Tasks, reads Gmail, and uses OpenAI gpt-4o-mini agents to turn emails and natural-language instructions into structured tasks and events.",
+    "category": "Full-stack / AI integration",
+    "status": "in-development",
+    "featured": true,
+    "order": 2,
+    "year": "2025",
+    "role": "Built the application",
+    "technologies": ["Next.js", "MongoDB", "Google APIs", "OAuth 2.0", "Clerk", "OpenAI API"],
+    "images": [],
+    "links": { "github": "https://github.com/HariomPCode/tasky" },
+    "caseStudy": {
+      "problem": "Deadlines and requests are scattered across email, calendar, and task lists, so turning them into actionable items is manual work.",
+      "contribution": "Full-stack implementation: Google API integration, the agent modules, authentication, and the dashboard.",
+      "features": [
+        "Unified dashboard for Google Calendar events and Google Tasks",
+        "Separate agent modules for tasks, email, calendar, and instruction interpretation, using gpt-4o-mini",
+        "Clerk authentication with Google OAuth 2.0 access",
+        "Mongoose models for user storage in MongoDB"
+      ],
+      "limitations": [
+        "No live demo or usage numbers are published",
+        "The résumé describes OpenAI function calling; the structured-output mechanism in the repository still needs to be confirmed before this page claims it"
+      ]
+    }
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "name": "Hariom Pandey",
+  "headline": "Software engineer building backend systems, developer tools, and full-stack products.",
+  "intro": "I design APIs, queues, and sandboxes, and the interfaces on top of them. Koder, my online judge, runs untrusted code in locked-down Docker containers; my open-source work is read-only file access with path-containment checks.",
+  "siteUrl": "",
+  "email": "pandeyhariom352@gmail.com",
+  "resumeUrl": "/resume.pdf",
+  "location": "Mumbai, India",
+  "availability": "Open to software engineering and full-stack roles.",
+  "social": {
+    "github": "https://github.com/HariomPCode",
+    "linkedin": "https://www.linkedin.com/in/hariom-pandey1",
+    "leetcode": "https://leetcode.com/u/E1Yjtr5hFH/"
+  },
+  "nav": [
+    { "label": "Work", "href": "/#work" },
+    { "label": "Skills", "href": "/#skills" },
+    { "label": "Experience", "href": "/#experience" },
+    { "label": "About", "href": "/about" },
+    { "label": "Contact", "href": "/#contact" }
+  ],
+  "labels": { "viewResume": "View résumé", "viewWork": "See the work", "source": "Source code", "live": "Live demo" }
+}

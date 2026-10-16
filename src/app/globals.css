@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme tokens (RGB triples). Change --accent / --accent-fg to re-color the site. */
+:root {
+  color-scheme: dark;
+  --bg: 27 29 33; --surface: 35 38 43; --line: 58 62 69; --fg: 238 239 241; --muted: 165 171 180;
+  --accent: 104 148 255; --accent-fg: 12 16 28;
+  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: 246 246 243; --surface: 255 255 255; --line: 215 218 223; --fg: 24 26 30; --muted: 86 93 104;
+  --accent: 30 76 214; --accent-fg: 255 255 255;
+}
+html { scroll-padding-top: 5rem; }
+body { background: rgb(var(--bg)); color: rgb(var(--fg)); font-family: var(--font-body); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+:focus-visible { outline: 2px solid rgb(var(--accent)); outline-offset: 3px; border-radius: 2px; }
+::selection { background: rgb(var(--accent) / 0.3); }
+.theme-sun { display: none; } .theme-moon { display: block; }
+:root[data-theme="light"] .theme-sun { display: block; } :root[data-theme="light"] .theme-moon { display: none; }
+@media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; } }
+@layer components {
+  .wrap { @apply mx-auto w-full max-w-6xl px-5 sm:px-8; }
+  .h2 { @apply font-display text-3xl sm:text-4xl tracking-tight; }
+  .btn { @apply inline-flex items-center gap-2 rounded-md border border-line px-4 py-2.5 text-sm font-medium transition-colors hover:border-accent hover:text-accent; }
+  .btn-primary { @apply border-accent bg-accent text-accent-fg hover:text-accent-fg hover:opacity-90; }
+  .tag { @apply rounded border border-line px-2 py-0.5 font-mono text-xs text-muted; }
+}
