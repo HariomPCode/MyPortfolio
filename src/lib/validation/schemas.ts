@@ -60,6 +60,8 @@ export const openSourceOrgSchema = z.object({
   avatar: z.string().startsWith("/"),
   contributions: z.number().int().positive(),
   contributionCount: z.number().int().positive().optional(),
+  status: z.enum(["merged", "open", "unmerged"]).optional(),
+  statusLabel: z.string().optional(),
   description: z.string().optional(),
 });
 export const openSourceOrgsSchema = z.array(openSourceOrgSchema);

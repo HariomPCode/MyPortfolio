@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { projects, getProject, hasCaseStudy } from "@/lib/data";
-import { STATUS_LABELS } from "@/lib/config";
+import { STATUS_LABELS, siteUrl } from "@/lib/config";
 import { ProjectMedia } from "@/components/projects/ProjectMedia";
 import { ProjectLinks } from "@/components/projects/ProjectLinks";
 import { CaseStudy } from "@/components/projects/CaseStudy";
@@ -15,7 +15,12 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const p = getProject((await params).slug); if (!p) return {};
   const description = p.tagline ?? p.description;
-  return { title: p.name, description, alternates: { canonical: `/projects/${p.slug}` }, openGraph: { title: p.name, description, type: "article" } };
+  return {
+    title: p.name,
+    description,
+    alternates: siteUrl ? { canonical: `/projects/${p.slug}` } : undefined,
+    openGraph: { title: p.name, description, type: "article" },
+  };
 }
 
 export default async function ProjectPage({ params }: Props) {

@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import { projects } from "@/lib/data";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { EmptyProjects } from "@/components/sections/Sections";
-export const metadata: Metadata = { title: "Projects", description: "All projects with source code and technical write-ups.", alternates: { canonical: "/projects" } };
+import { siteUrl } from "@/lib/config";
+export const metadata: Metadata = {
+  title: "Projects",
+  description: "All projects with source code and technical write-ups.",
+  alternates: siteUrl ? { canonical: "/projects" } : undefined,
+};
 export default function Projects() {
   return (
     <section className="py-16 sm:py-24"><div className="wrap">

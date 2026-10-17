@@ -86,7 +86,7 @@
       ],
       "limitations": [
         "Docker enforces the memory cap, but out-of-memory failures surface as runtime errors rather than a Memory Limit Exceeded verdict",
-        "Auth routes have no rate limiting or account lockout",
+        "Redis fixed-window rate limiting is implemented on auth routes (10 req/min) and submissions (20 req/min), but automated account lockout after repeated failed attempts is not implemented",
         "No CI workflow in the repository, and no deployed demo",
         "Worker capacity values are host-specific and not benchmarked for production"
       ]
@@ -119,13 +119,13 @@
       "contribution": "Full-stack implementation: Google API integration, the agent modules, authentication, and the dashboard.",
       "features": [
         "Unified dashboard for Google Calendar events and Google Tasks",
-        "Separate agent modules for tasks, email, calendar, and instruction interpretation, using gpt-4o-mini",
+        "Separate agent modules for tasks, email, calendar, and prompt-guided JSON instruction interpretation using gpt-4o-mini",
         "Clerk authentication with Google OAuth 2.0 access",
         "Mongoose models for user storage in MongoDB"
       ],
       "limitations": [
         "No live demo or usage numbers are published",
-        "The résumé describes OpenAI function calling; the structured-output mechanism in the repository still needs to be confirmed before this page claims it"
+        "Structured outputs rely on prompt-engineered JSON format instructions parsed via JSON.parse rather than OpenAI's native tools/function-calling or JSON schema response_format APIs"
       ]
     }
   }

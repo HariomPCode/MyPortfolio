@@ -5,5 +5,4 @@ node_modules
 *.tsbuildinfo
 next-env.d.ts
 .vercel
-README.md
 CONTENT-NOTES.md

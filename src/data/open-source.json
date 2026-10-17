@@ -6,7 +6,9 @@
     "url": "https://github.com/career-ops-hq",
     "avatar": "/images/orgs/career-ops.png",
     "contributions": 3,
-    "contributionCount": 3
+    "contributionCount": 3,
+    "status": "merged",
+    "statusLabel": "3 merged"
   },
   {
     "id": "finance-flash",
@@ -15,7 +17,9 @@
     "url": "https://github.com/FinanceFlash",
     "avatar": "/images/orgs/finance-flash.png",
     "contributions": 2,
-    "contributionCount": 2
+    "contributionCount": 2,
+    "status": "open",
+    "statusLabel": "2 open"
   },
   {
     "id": "onyx",
@@ -24,7 +28,9 @@
     "url": "https://github.com/onyx-dot-app",
     "avatar": "/images/orgs/onyx.jpg",
     "contributions": 1,
-    "contributionCount": 1
+    "contributionCount": 1,
+    "status": "open",
+    "statusLabel": "1 open"
   },
   {
     "id": "veridion-labs",
@@ -33,6 +39,8 @@
     "url": "https://github.com/VeridionLabs",
     "avatar": "/images/orgs/veridion-labs.png",
     "contributions": 1,
-    "contributionCount": 1
+    "contributionCount": 1,
+    "status": "unmerged",
+    "statusLabel": "1 unmerged"
   }
 ]

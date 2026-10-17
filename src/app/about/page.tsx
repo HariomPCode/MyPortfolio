@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { AboutSection, AchievementsSection, ExperienceSection, ContactSection } from "@/components/sections/Sections";
 import { site } from "@/lib/data";
-export const metadata: Metadata = { title: "About", description: `Background, education, and experience of ${site.name}.`, alternates: { canonical: "/about" } };
+import { siteUrl } from "@/lib/config";
+export const metadata: Metadata = {
+  title: "About",
+  description: `Background, education, and experience of ${site.name}.`,
+  alternates: siteUrl ? { canonical: "/about" } : undefined,
+};
 export default function About() {
   return (
     <>

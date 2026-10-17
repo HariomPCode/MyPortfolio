@@ -15,7 +15,7 @@ export function OpenSourceSection() {
       <div className="space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
           <p className="text-sm text-muted">
-            Overview of repositories and organizations with peer-reviewed pull requests.
+            Overview of repositories and organizations with authored and peer-reviewed pull requests.
           </p>
           <a
             href={githubUrl}
@@ -33,7 +33,7 @@ export function OpenSourceSection() {
         <div className="grid gap-4 sm:grid-cols-2">
           {openSourceOrgs.map((org) => {
             const count = org.contributions ?? org.contributionCount ?? 1;
-            const countLabel = `${count} ${count === 1 ? "contribution" : "contributions"}`;
+            const countLabel = org.statusLabel ?? `${count} ${count === 1 ? "contribution" : "contributions"}`;
 
             return (
               <a

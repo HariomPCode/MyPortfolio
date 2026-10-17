@@ -6,7 +6,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
-  metadataBase: siteUrl ? new URL(siteUrl) : undefined,
+  metadataBase: siteUrl ? new URL(siteUrl) : null,
   title: { default: `${site.name} — Software engineer`, template: `%s — ${site.name}` },
   description: site.headline,
   openGraph: { type: "website", siteName: site.name, title: site.name, description: site.headline },

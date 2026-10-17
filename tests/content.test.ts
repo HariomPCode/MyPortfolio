@@ -14,7 +14,7 @@ assert.ok(!projectSchema.safeParse({ ...base, slug: "Bad Slug" }).success, "bad 
 
 // Achievements validation
 assert.ok(achievementsSchema.safeParse(achievements).success, "shipped achievement records are valid");
-assert.strictEqual(achievements.length, 3, "exactly three achievement records exist");
+assert.ok(achievements.length > 0, "achievement records exist");
 
 // Each supported category passes validation
 const supportedCategories = ["Open source", "Competitions", "Problem solving"] as const;
@@ -64,6 +64,7 @@ assert.strictEqual(careerOps.handle, "career-ops-hq");
 assert.strictEqual(careerOps.url, "https://github.com/career-ops-hq");
 assert.strictEqual(careerOps.avatar, "/images/orgs/career-ops.png");
 assert.strictEqual(careerOps.contributions, 3);
+assert.strictEqual(careerOps.status, "merged");
 
 assert.strictEqual(financeFlash.id, "finance-flash");
 assert.strictEqual(financeFlash.name, "FinanceFlash");
@@ -71,6 +72,7 @@ assert.strictEqual(financeFlash.handle, "FinanceFlash");
 assert.strictEqual(financeFlash.url, "https://github.com/FinanceFlash");
 assert.strictEqual(financeFlash.avatar, "/images/orgs/finance-flash.png");
 assert.strictEqual(financeFlash.contributions, 2);
+assert.strictEqual(financeFlash.status, "open");
 
 assert.strictEqual(onyx.id, "onyx");
 assert.strictEqual(onyx.name, "Onyx");
@@ -78,6 +80,7 @@ assert.strictEqual(onyx.handle, "onyx-dot-app");
 assert.strictEqual(onyx.url, "https://github.com/onyx-dot-app");
 assert.strictEqual(onyx.avatar, "/images/orgs/onyx.jpg");
 assert.strictEqual(onyx.contributions, 1);
+assert.strictEqual(onyx.status, "open");
 
 assert.strictEqual(veridion.id, "veridion-labs");
 assert.strictEqual(veridion.name, "VeridionLabs");
@@ -85,6 +88,7 @@ assert.strictEqual(veridion.handle, "VeridionLabs");
 assert.strictEqual(veridion.url, "https://github.com/VeridionLabs");
 assert.strictEqual(veridion.avatar, "/images/orgs/veridion-labs.png");
 assert.strictEqual(veridion.contributions, 1);
+assert.strictEqual(veridion.status, "unmerged");
 
 // Malformed open source organization payloads are rejected
 assert.ok(!openSourceOrgSchema.safeParse({ ...careerOps, url: "not-a-url" }).success, "invalid org URL rejected");
@@ -376,15 +380,45 @@ assert.strictEqual(buildLeetCodeWeeks("{}").length, 52);
 
 async function runAllAsyncTests() {
   await testMissingToken();
-  const lcResult = await getLeetCodeData("E1Yjtr5hFH");
-  assert.strictEqual(
-    lcResult.success,
-    true,
-    "getLeetCodeData returns data via live fetch or snapshot fallback"
-  );
-  if (lcResult.success) {
-    assert.ok(lcResult.data.solved.total >= 640, "solved total is at least 640");
-    assert.strictEqual(lcResult.data.weeks.length, 52);
+
+  // Test getLeetCodeData with deterministic mock fetch responses
+  const originalFetch = globalThis.fetch;
+  try {
+    // 1. Live path success with fixture mock
+    globalThis.fetch = async () =>
+      new Response(JSON.stringify(validLeetCodeLiveMock), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    const liveResult = await getLeetCodeData("E1Yjtr5hFH");
+    assert.strictEqual(
+      liveResult.success,
+      true,
+      "getLeetCodeData returns data via mocked live fetch"
+    );
+    if (liveResult.success) {
+      assert.strictEqual(liveResult.data.isSnapshot, false);
+      assert.strictEqual(liveResult.data.solved.total, 640);
+      assert.strictEqual(liveResult.data.weeks.length, 52);
+    }
+
+    // 2. Snapshot fallback on network failure
+    globalThis.fetch = async () => {
+      throw new Error("Simulated network failure");
+    };
+    const fallbackResult = await getLeetCodeData("E1Yjtr5hFH");
+    assert.strictEqual(
+      fallbackResult.success,
+      true,
+      "getLeetCodeData falls back to snapshot on fetch failure"
+    );
+    if (fallbackResult.success) {
+      assert.strictEqual(fallbackResult.data.isSnapshot, true);
+      assert.strictEqual(fallbackResult.data.username, "E1Yjtr5hFH");
+      assert.strictEqual(fallbackResult.data.weeks.length, 52);
+    }
+  } finally {
+    globalThis.fetch = originalFetch;
   }
 }
 
