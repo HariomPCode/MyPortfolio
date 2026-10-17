@@ -19,38 +19,37 @@ export function Hero() {
     >
       {/* Cinematic Atmospheric Lighting (subtle blue highlights) */}
       <div
-        className="pointer-events-none absolute right-[-5%] top-[12%] -z-10 h-[500px] w-[500px] rounded-full bg-accent/14 blur-[130px]"
+        className="pointer-events-none absolute right-[5%] top-[8%] -z-10 h-[520px] w-[520px] rounded-full bg-accent/16 blur-[120px]"
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute right-[18%] bottom-[8%] -z-10 h-[380px] w-[380px] rounded-full bg-accent/10 blur-[110px]"
+        className="pointer-events-none absolute right-[20%] bottom-[5%] -z-10 h-[360px] w-[360px] rounded-full bg-accent/8 blur-[100px]"
         aria-hidden
       />
 
       {/* Cinematic Portrait / Visual Column on the Right */}
       <div
-        className="pointer-events-none absolute right-0 top-0 bottom-0 z-0 w-full lg:w-[48%] xl:w-[45%] select-none overflow-hidden"
+        className="pointer-events-none absolute right-0 top-0 bottom-0 z-0 w-full lg:w-[50%] xl:w-[48%] select-none overflow-hidden"
         aria-hidden
       >
-        {/* Soft edge blending gradients */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-r from-[rgb(var(--bg))] via-[rgb(var(--bg))/80] to-transparent lg:via-[rgb(var(--bg))/40]" />
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-[rgb(var(--bg))] via-transparent to-[rgb(var(--bg))/70] lg:to-transparent" />
+        {/* Soft edge blending gradients - gentle left fade, bottom torso fade to reduce chest dominance */}
+        <div className="absolute inset-0 z-10 bg-gradient-to-r from-[rgb(var(--bg))] via-[rgb(var(--bg))/40] to-transparent lg:via-[rgb(var(--bg))/15]" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-[rgb(var(--bg))] via-[rgb(var(--bg))/35] to-transparent lg:via-25%" />
         <div className="absolute inset-0 z-10 bg-gradient-to-b from-[rgb(var(--bg))] via-transparent to-transparent" />
-        <div className="absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-[rgb(var(--bg))] to-transparent lg:w-16" />
-        {/* Cinematic subtle color grading overlay to harmonize outdoor background with dark theme */}
-        <div className="absolute inset-0 z-10 bg-accent/8 mix-blend-overlay" />
-        <div className="absolute inset-0 z-10 bg-[rgb(var(--bg))/45] lg:hidden" />
+        <div className="absolute inset-y-0 right-0 z-10 w-6 bg-gradient-to-l from-[rgb(var(--bg))] to-transparent lg:w-12" />
+        {/* Mobile background wash for high text contrast without darkening the face on desktop */}
+        <div className="absolute inset-0 z-10 bg-[rgb(var(--bg))/55] lg:hidden" />
 
-        {/* Masked Portrait Container with horizontal gradient mask */}
-        <div className="relative h-full w-full [mask-image:linear-gradient(to_right,transparent_0%,rgba(0,0,0,0.1)_15%,rgba(0,0,0,0.55)_45%,rgba(0,0,0,0.92)_75%,rgba(0,0,0,1)_100%)]">
+        {/* Masked Portrait Container: smooth left fade, completely clear across face and eyes */}
+        <div className="relative h-full w-full [mask-image:linear-gradient(to_right,transparent_0%,rgba(0,0,0,0.08)_12%,rgba(0,0,0,0.7)_32%,rgba(0,0,0,1)_48%,rgba(0,0,0,1)_100%)]">
           {hasPortrait ? (
             <Image
               src={portraitRelativePath}
               alt={site.name}
               fill
               priority
-              sizes="(min-width: 1280px) 45vw, (min-width: 1024px) 50vw, 100vw"
-              className="object-cover object-top contrast-[1.06] brightness-[0.93] saturate-[0.88] opacity-30 transition-opacity duration-700 lg:opacity-85"
+              sizes="(min-width: 1280px) 48vw, (min-width: 1024px) 50vw, 100vw"
+              className="object-cover object-[73%_14%] scale-[1.12] lg:scale-[1.26] origin-[73%_22%] contrast-[1.04] brightness-[1.05] saturate-[0.98] opacity-25 transition-all duration-700 lg:opacity-95"
             />
           ) : (
             /* Atmospheric cinematic blueprint silhouette placeholder until portrait file is provided */

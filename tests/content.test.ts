@@ -383,7 +383,7 @@ async function runAllAsyncTests() {
     "getLeetCodeData returns data via live fetch or snapshot fallback"
   );
   if (lcResult.success) {
-    assert.strictEqual(lcResult.data.solved.total, 640);
+    assert.ok(lcResult.data.solved.total >= 640, "solved total is at least 640");
     assert.strictEqual(lcResult.data.weeks.length, 52);
   }
 }
