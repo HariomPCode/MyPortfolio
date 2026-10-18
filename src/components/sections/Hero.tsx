@@ -127,9 +127,15 @@ export function Hero() {
                 <ArrowDown size={16} aria-hidden />
                 {site.labels.viewWork}
               </Link>
-              <a href={site.resumeUrl} className="btn">
+              <a
+                href={site.resumeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn"
+              >
                 <FileText size={16} aria-hidden />
                 {site.labels.viewResume}
+                <span className="sr-only"> (opens in new tab)</span>
               </a>
             </div>
           </HeroReveal>

@@ -101,10 +101,7 @@ export function GitHubHeatmap({ data }: { data: GitHubActivityData }) {
           role="img"
           aria-labelledby="github-heatmap-title"
         >
-          <title id="github-heatmap-title">
-            Contribution graph for {username}: {totalContributions} contributions in
-            the last year
-          </title>
+          <title id="github-heatmap-title">{`Contribution graph for ${username}: ${totalContributions} contributions in the last year`}</title>
 
           {/* Month labels */}
           {monthLabels.map((m) => (

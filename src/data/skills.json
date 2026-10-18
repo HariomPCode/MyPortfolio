@@ -1,13 +1,50 @@
 [
-  { "category": "Backend and data", "note": "Used in Koder, Tasky, and EduTest", "items": [
-    { "name": "Node.js", "level": "Projects" }, { "name": "Express", "level": "Projects" }, { "name": "REST APIs", "level": "Projects" },
-    { "name": "MongoDB", "level": "Projects" }, { "name": "Redis / BullMQ", "level": "Projects" }, { "name": "PostgreSQL", "level": "Familiar" } ] },
-  { "category": "Frontend", "note": "Including production work at Legalo.ai", "items": [
-    { "name": "React", "level": "Internship" }, { "name": "Next.js", "level": "Internship" }, { "name": "TypeScript", "level": "Projects" }, { "name": "Tailwind CSS", "level": "Projects" }, { "name": "Redux Toolkit", "level": "Internship" } ] },
-  { "category": "Infrastructure and security", "note": "", "items": [
-    { "name": "Docker", "level": "Projects" }, { "name": "OAuth 2.0", "level": "Projects" }, { "name": "JWT", "level": "Projects" }, { "name": "Git and pull requests", "level": "Open source" } ] },
-  { "category": "Languages", "note": "", "items": [
-    { "name": "TypeScript", "level": "Projects" }, { "name": "JavaScript", "level": "Projects" }, { "name": "Java", "level": "Coursework and contests" }, { "name": "Python", "level": "Familiar" } ] },
-  { "category": "AI integration", "note": "", "items": [
-    { "name": "OpenAI API", "level": "Projects" } ] }
+  {
+    "category": "Backend and data",
+    "note": "Used in Koder, Tasky, and EduTest",
+    "items": [
+      { "name": "Node.js", "level": "Projects" },
+      { "name": "Express", "level": "Projects" },
+      { "name": "REST APIs", "level": "Projects" },
+      { "name": "MongoDB", "level": "Projects" },
+      { "name": "Redis / BullMQ", "level": "Projects" },
+      { "name": "PostgreSQL", "level": "Familiar" }
+    ]
+  },
+  {
+    "category": "Frontend",
+    "note": "Including production work at Legalo.ai",
+    "items": [
+      { "name": "React", "level": "Internship" },
+      { "name": "Next.js", "level": "Internship" },
+      { "name": "TypeScript", "level": "Projects" },
+      { "name": "Tailwind CSS", "level": "Projects" },
+      { "name": "Redux Toolkit", "level": "Internship" }
+    ]
+  },
+  {
+    "category": "Infrastructure and security",
+    "note": "",
+    "items": [
+      { "name": "Docker", "level": "Projects" },
+      { "name": "OAuth 2.0", "level": "Projects" },
+      { "name": "JWT", "level": "Projects" },
+      { "name": "Git and pull requests", "level": "Open source" }
+    ]
+  },
+  {
+    "category": "Languages",
+    "note": "",
+    "items": [
+      { "name": "TypeScript", "level": "Projects" },
+      { "name": "JavaScript", "level": "Projects" },
+      { "name": "Java", "level": "Coursework and contests" },
+      { "name": "Python", "level": "Familiar" }
+    ]
+  },
+  {
+    "category": "AI integration",
+    "note": "",
+    "items": [{ "name": "OpenAI API", "level": "Projects" }]
+  }
 ]

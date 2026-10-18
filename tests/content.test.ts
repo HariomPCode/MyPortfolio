@@ -99,6 +99,38 @@ assert.ok(!openSourceOrgSchema.safeParse({ ...careerOps, contributions: -1 }).su
 import { existsSync } from "node:fs";
 assert.ok(existsSync("public/images/portrait.jpg"), "hero portrait file exists at public/images/portrait.jpg");
 
+// TechIcon and TechBadge validation
+import { TechIcon } from "../src/components/ui/TechIcon";
+import { TechBadge } from "../src/components/ui/TechBadge";
+import skills from "../src/data/skills.json";
+
+const allTechnologies = [
+  ...skills.flatMap((g) => g.items.map((i) => i.name)),
+  ...projects.flatMap((p) => p.technologies),
+];
+assert.ok(allTechnologies.length > 0, "technologies exist in skills and projects");
+for (const tech of allTechnologies) {
+  const icon = TechIcon({ name: tech, size: 14 });
+  assert.ok(icon, `icon renders for technology: ${tech}`);
+  const badge = TechBadge({ name: tech });
+  assert.ok(badge, `badge renders for technology: ${tech}`);
+}
+
+// Graceful fallback for unknown technologies
+const fallbackIcon = TechIcon({ name: "unknown-tech-test" });
+assert.ok(fallbackIcon, "fallback icon renders for unknown technology");
+
+// ProjectCard and ProjectMedia validation
+import { ProjectCard } from "../src/components/projects/ProjectCard";
+import { ProjectMedia } from "../src/components/projects/ProjectMedia";
+
+const parsedProjects = projectsSchema.parse(projects);
+for (const p of parsedProjects) {
+  const card = ProjectCard({ project: p });
+  assert.ok(card, `ProjectCard renders for ${p.id}`);
+  const media = ProjectMedia({ project: p });
+  assert.ok(media, `ProjectMedia renders for ${p.id}`);
+}
 
 import { parseGitHubContributions, getGitHubContributions } from "../src/lib/github/contributions";
 

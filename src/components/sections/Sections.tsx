@@ -3,6 +3,7 @@ import { Mail, GitPullRequest, Trophy, Code2, FileText } from "lucide-react";
 import { Section } from "@/components/ui/Section";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { AchievementItem } from "@/components/achievements/AchievementItem";
+import { TechBadge } from "@/components/ui/TechBadge";
 import { featuredProjects, projects, skills, experience, education, achievements, site } from "@/lib/data";
 import { socialLinks } from "@/lib/config";
 
@@ -35,7 +36,15 @@ export function SkillsSection() {
         {skills.map((g) => (
           <div key={g.category} className="grid gap-2 py-5 sm:grid-cols-[14rem_1fr]">
             <dt className="font-medium">{g.category}{g.note && <span className="block text-sm font-normal text-muted">{g.note}</span>}</dt>
-            <dd><ul className="flex flex-wrap gap-2">{g.items.map((s) => <li key={s.name} className="tag"><span className="text-fg">{s.name}</span> · {s.level}</li>)}</ul></dd>
+            <dd>
+              <ul className="flex flex-wrap gap-2">
+                {g.items.map((s) => (
+                  <li key={s.name}>
+                    <TechBadge name={s.name} level={s.level} />
+                  </li>
+                ))}
+              </ul>
+            </dd>
           </div>
         ))}
       </dl>
@@ -118,8 +127,8 @@ export function ContactSection() {
       <p className="font-display text-3xl sm:text-4xl"><a href={`mailto:${site.email}`} className="underline decoration-accent underline-offset-4 hover:text-accent">{site.email}</a></p>
       <div className="mt-8 flex flex-wrap gap-3">
         <a href={`mailto:${site.email}`} className="btn btn-primary"><Mail size={16} aria-hidden />Email me</a>
-        {socialLinks.map((l) => <a key={l.key} href={l.href} target="_blank" rel="noopener noreferrer" className="btn">{l.label}</a>)}
-        <a href={site.resumeUrl} className="btn"><FileText size={16} aria-hidden />{site.labels.viewResume}</a>
+        {socialLinks.map((l) => <a key={l.key} href={l.href} target="_blank" rel="noopener noreferrer" className="btn">{l.label}<span className="sr-only"> (opens in new tab)</span></a>)}
+        <a href={site.resumeUrl} target="_blank" rel="noopener noreferrer" className="btn"><FileText size={16} aria-hidden />{site.labels.viewResume}<span className="sr-only"> (opens in new tab)</span></a>
       </div>
     </Section>
   );

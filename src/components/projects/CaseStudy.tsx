@@ -1,3 +1,4 @@
+import React from "react";
 import type { Project } from "@/types";
 
 function Block({ title, children }: { title: string; children: React.ReactNode }) {

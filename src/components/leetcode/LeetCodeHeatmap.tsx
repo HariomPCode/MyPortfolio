@@ -106,10 +106,7 @@ export function LeetCodeHeatmap({ data }: { data: LeetCodeActivityData }) {
           role="img"
           aria-labelledby="leetcode-heatmap-title"
         >
-          <title id="leetcode-heatmap-title">
-            LeetCode submission graph for {username}: {totalSubmissions} submissions
-            in the past year
-          </title>
+          <title id="leetcode-heatmap-title">{`LeetCode submission graph for ${username}: ${totalSubmissions} submissions in the past year`}</title>
 
           {/* Month labels */}
           {monthLabels.map((m) => (
