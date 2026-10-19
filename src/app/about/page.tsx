@@ -22,7 +22,7 @@ export default function About() {
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted">
             I&apos;m a B.E. student in Artificial Intelligence and Machine Learning
-            at the Universal College of Engineering associated to University of
+            at Universal College of Engineering, affiliated with the University of
             Mumbai, building backend and full-stack systems.
           </p>
         </div>
