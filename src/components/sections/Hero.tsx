@@ -29,7 +29,7 @@ export function Hero() {
 
       {/* Cinematic Portrait / Visual Column on the Right */}
       <div
-        className="pointer-events-none absolute right-0 top-0 bottom-0 z-0 w-full lg:w-[50%] xl:w-[48%] select-none overflow-hidden"
+        className="pointer-events-none absolute right-0 top-0 bottom-0 z-0 hidden lg:block lg:w-[50%] xl:w-[48%] select-none overflow-hidden"
         aria-hidden
       >
         {/* Soft edge blending gradients - gentle left fade, bottom torso fade to reduce chest dominance */}

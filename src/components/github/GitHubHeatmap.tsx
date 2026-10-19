@@ -89,7 +89,7 @@ export function GitHubHeatmap({ data }: { data: GitHubActivityData }) {
   const legendY = totalHeight - 12;
 
   return (
-    <div className="w-full">
+    <div className="w-full min-w-0">
       <div className="sr-only">
         GitHub contribution calendar: {totalContributions} contributions in the
         last year across {weeks.length} weeks.

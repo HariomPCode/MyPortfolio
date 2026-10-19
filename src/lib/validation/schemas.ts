@@ -63,6 +63,12 @@ export const openSourceOrgSchema = z.object({
   status: z.enum(["merged", "open", "unmerged"]).optional(),
   statusLabel: z.string().optional(),
   description: z.string().optional(),
+  pullRequests: z.array(z.object({
+    number: z.number().int().positive(),
+    url: z.url(),
+    status: z.string(),
+    title: z.string().optional(),
+  })).optional(),
 });
 export const openSourceOrgsSchema = z.array(openSourceOrgSchema);
 export const openSourceContributionSchema = openSourceOrgSchema;

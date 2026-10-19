@@ -124,7 +124,7 @@ export function AchievementsSection() {
 export function ContactSection() {
   return (
     <Section id="contact" title="Contact" intro={site.availability}>
-      <p className="font-display text-3xl sm:text-4xl"><a href={`mailto:${site.email}`} className="underline decoration-accent underline-offset-4 hover:text-accent">{site.email}</a></p>
+      <p className="font-display text-3xl sm:text-4xl"><a href={`mailto:${site.email}`} className="underline decoration-accent underline-offset-4 hover:text-accent break-all">{site.email}</a></p>
       <div className="mt-8 flex flex-wrap gap-3">
         <a href={`mailto:${site.email}`} className="btn btn-primary"><Mail size={16} aria-hidden />Email me</a>
         {socialLinks.map((l) => <a key={l.key} href={l.href} target="_blank" rel="noopener noreferrer" className="btn">{l.label}<span className="sr-only"> (opens in new tab)</span></a>)}

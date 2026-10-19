@@ -2,13 +2,13 @@
   {
     "id": "oss-milestone",
     "title": "Open source code contributions to developer tooling",
-    "detail": "Authored and merged pull requests across open-source web platforms and developer tooling, including Career Ops, Onyx, FinanceFlash, and VeridionLabs.",
+    "detail": "Authored pull requests across open-source web platforms and developer tooling: 3 merged at Career Ops (#2958, #3044, #4958), 3 open across FinanceFlash (#34, #70) and Onyx (#14173), and 1 closed, not merged at VeridionLabs (#92).",
     "category": "Open source",
     "url": "https://github.com/HariomPCode"
   },
   {
     "id": "contests",
-    "title": "Three inter-college programming competition placements",
+    "title": "Won three awards in inter-college programming competitions",
     "detail": "Two 2nd Prize finishes at Tantrotsav 2024 and 2nd Runner-up at CodeSprint, Vidyavardhini's College of Engineering and Technology.",
     "category": "Competitions",
     "url": ""

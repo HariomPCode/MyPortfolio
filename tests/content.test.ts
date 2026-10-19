@@ -457,6 +457,7 @@ async function runAllAsyncTests() {
 runAllAsyncTests()
   .then(() => {
     console.log("All content, open-source, GitHub, and LeetCode tests passed.");
+    process.exit(0);
   })
   .catch((err) => {
     console.error(err);

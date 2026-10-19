@@ -94,7 +94,7 @@ export function LeetCodeHeatmap({ data }: { data: LeetCodeActivityData }) {
   const legendY = totalHeight - 12;
 
   return (
-    <div className="w-full">
+    <div className="w-full min-w-0">
       <div className="sr-only">
         LeetCode submission calendar: {totalSubmissions} submissions in the
         past year across {weeks.length} weeks.

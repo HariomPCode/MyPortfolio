@@ -8,7 +8,24 @@
     "contributions": 3,
     "contributionCount": 3,
     "status": "merged",
-    "statusLabel": "3 merged"
+    "statusLabel": "3 merged",
+    "pullRequests": [
+      {
+        "number": 2958,
+        "url": "https://github.com/career-ops-hq/career-ops/pull/2958",
+        "status": "merged"
+      },
+      {
+        "number": 3044,
+        "url": "https://github.com/career-ops-hq/career-ops/pull/3044",
+        "status": "merged"
+      },
+      {
+        "number": 4958,
+        "url": "https://github.com/career-ops-hq/career-ops/pull/4958",
+        "status": "merged"
+      }
+    ]
   },
   {
     "id": "finance-flash",
@@ -19,7 +36,19 @@
     "contributions": 2,
     "contributionCount": 2,
     "status": "open",
-    "statusLabel": "2 open"
+    "statusLabel": "2 open",
+    "pullRequests": [
+      {
+        "number": 34,
+        "url": "https://github.com/FinanceFlash/unvibecode/pull/34",
+        "status": "open"
+      },
+      {
+        "number": 70,
+        "url": "https://github.com/FinanceFlash/unvibecode/pull/70",
+        "status": "open"
+      }
+    ]
   },
   {
     "id": "onyx",
@@ -30,7 +59,14 @@
     "contributions": 1,
     "contributionCount": 1,
     "status": "open",
-    "statusLabel": "1 open"
+    "statusLabel": "1 open",
+    "pullRequests": [
+      {
+        "number": 14173,
+        "url": "https://github.com/onyx-dot-app/onyx/pull/14173",
+        "status": "open"
+      }
+    ]
   },
   {
     "id": "veridion-labs",
@@ -41,6 +77,13 @@
     "contributions": 1,
     "contributionCount": 1,
     "status": "unmerged",
-    "statusLabel": "1 unmerged"
+    "statusLabel": "1 closed, not merged",
+    "pullRequests": [
+      {
+        "number": 92,
+        "url": "https://github.com/VeridionLabs/veridion/pull/92",
+        "status": "closed, not merged"
+      }
+    ]
   }
 ]
