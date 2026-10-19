@@ -17,7 +17,11 @@ export const projectStatus = z.enum(["planned", "in-development", "prototype", "
 const caseStudySchema = z.object({
   problem: z.string().optional(), users: z.string().optional(), contribution: z.string().optional(),
   features: z.array(text).optional(),
-  architecture: z.object({ summary: text, steps: z.array(text).optional() }).optional(),
+  architecture: z.object({
+    summary: text,
+    steps: z.array(text).optional(),
+    components: z.array(z.object({ name: text, role: text, tech: z.string().optional() })).optional(),
+  }).optional(),
   decisions: z.array(z.object({ title: text, body: text })).optional(),
   challenges: z.array(z.object({ challenge: text, solution: text })).optional(),
   testing: z.array(text).optional(), outcomes: z.array(text).optional(), limitations: z.array(text).optional(),

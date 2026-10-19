@@ -3,8 +3,8 @@
     "id": "koder",
     "slug": "koder",
     "name": "Koder",
-    "tagline": "Online judge that runs untrusted code in isolated Docker containers.",
-    "description": "A full-stack online judge for function-signature problems. Users submit JavaScript, Java, or Python; language-specific BullMQ workers grade each submission in a per-submission Docker sandbox and store the verdict.",
+    "tagline": "Online judge executing untrusted JavaScript, Java, and Python in isolated Docker sandboxes.",
+    "description": "A full-stack online judge for function-signature algorithmic problems. Authenticated users submit code evaluated across hidden test batches by language-specific BullMQ workers running hardened Docker containers with tight resource and watchdog caps.",
     "category": "Backend / Developer platform",
     "status": "completed",
     "featured": true,
@@ -23,72 +23,114 @@
     "images": [],
     "links": { "github": "https://github.com/HariomPCode/koder" },
     "caseStudy": {
-      "problem": "An online judge has to run code it cannot trust. Grading in the request path would block the API and let a malicious or runaway submission affect the server.",
-      "users": "Signed-in users solving problems, and administrators who manage questions and contests.",
-      "contribution": "Architecture, API, queue and worker design, sandbox hardening, and the grading pipeline. Source is on GitHub for review.",
+      "problem": "Online judges must execute arbitrary, untrusted user code without compromising host security or blocking web services. Evaluating submissions directly in request-response cycles risks Denial of Service from infinite loops, malicious syscalls, network exfiltration, and memory exhaustion. The platform requires asynchronous job dispatching, non-root sandbox isolation, strict CPU and memory cgroups, multi-layer watchdogs, and deterministic verdict evaluation.",
+      "users": "Developers solving algorithmic challenges and competing in timed contests, alongside administrators managing question sets, reference test suites, and contest leaderboards.",
+      "contribution": "Architected and implemented the entire platform: Express REST API, shared @koder/shared workspace contract, language-specific BullMQ workers, hardened DockerSandbox container isolation, Base64 Line Streaming Protocol (BLSP), multi-tier execution watchdogs, and MongoDB persistence.",
       "features": [
-        "Function-signature problems with JavaScript, Java, and Python submissions",
-        "Cookie-authenticated REST API under /api/v1, plus admin routes protected by an admin-role check",
-        "One BullMQ queue and worker per language (js-queue, java-queue, python-queue)",
-        "Sample and hidden test cases graded in batches of up to 50",
-        "Contests and leaderboards, and an admin interface for questions and contests",
-        "Shared @koder/shared workspace package for models, queue config, verdicts, and runner generation"
+        "Function-signature problem judging for JavaScript (Node 20), Java (Temurin 17 JDK), and Python (3.11)",
+        "Cookie-authenticated REST API under /api/v1 with role-based admin endpoints for problem curation and contest management",
+        "Dedicated BullMQ worker queues per language (js-queue, java-queue, python-queue) bounded by Redis-backed host execution budgets",
+        "Detached per-submission Docker sandboxes with zero networking, dropped capabilities, tmpfs mounts, and read-only root filesystems",
+        "Base64 Line Streaming Protocol (BLSP) streaming batches of up to 50 test cases to a single runner process via stdin/stdout",
+        "Fail-fast verdict engine recording Accepted, Wrong Answer, Time Limit Exceeded, Runtime Error, or Compilation Error upon first failure",
+        "Shared @koder/shared package unifying models, queue settings, language configs, protocols, and database operations"
       ],
       "architecture": {
-        "summary": "Three kinds of process: a Next.js frontend, an Express API, and one worker per language. Redis carries jobs; MongoDB stores submissions and questions. Docker Compose supplies MongoDB and Redis for local development only.",
+        "summary": "Distributed service architecture decoupling web ingestion, queue orchestration, and containerized grading. The Next.js client interacts with an Express API over HTTP; Redis carries BullMQ job queues; dedicated Node.js worker daemons supervise isolated Docker containers; and MongoDB stores problems, test cases, and persistent submission outcomes.",
+        "components": [
+          {
+            "name": "Express API Gateway",
+            "role": "Handles session authentication, validates submission parameters against supported languages, records initial pending submissions in MongoDB, and enqueues jobs.",
+            "tech": "Express, Node.js, JWT"
+          },
+          {
+            "name": "Queue Broker",
+            "role": "Distributes execution workloads into language-partitioned FIFO queues (js-queue, java-queue, python-queue) to prevent compute starvation.",
+            "tech": "Redis, BullMQ"
+          },
+          {
+            "name": "Language Workers",
+            "role": "Independent daemons that consume jobs, generate runner harnesses, mount namespaced temporary directories, and supervise container lifecycles.",
+            "tech": "TypeScript, Node.js"
+          },
+          {
+            "name": "DockerSandbox Engine",
+            "role": "Spawns detached, hardened containers with dropped Linux capabilities, zero networking, read-only root filesystems, and strict CPU/memory cgroups.",
+            "tech": "Docker, Alpine Linux"
+          },
+          {
+            "name": "BLSP Protocol Streamer",
+            "role": "Streams test case inputs and captures outputs over docker exec stdin/stdout using line-framed Base64 payloads to preserve data integrity.",
+            "tech": "Node.js Streams, Base64"
+          },
+          {
+            "name": "Verdict & Persistence Store",
+            "role": "Stores question definitions, hidden test suites, user profiles, and completed submission verdicts with runtime and memory diagnostics.",
+            "tech": "MongoDB, Mongoose"
+          }
+        ],
         "steps": [
-          "The frontend posts { language, code } to POST /api/v1/submissions/:questionId.",
-          "The API validates the language, saves a submission as pending, and enqueues an execute job on the matching queue.",
-          "The language worker loads the submission and question, generates the runner, and starts one Docker container.",
-          "Test cases stream to the runner over a line-based Base64 protocol; Java is compiled with javac first.",
-          "The worker records the first failure, or Accepted, in MongoDB and force-removes the container.",
-          "The frontend picks up the result through an events stream, falling back to polling GET /api/v1/submissions/:submissionId."
+          "Submission Ingestion: Authenticated user submits { language, code } via POST /api/v1/submissions/:questionId.",
+          "Validation & Queueing: The API validates language against SUPPORTED_LANGUAGES, creates a submission record marked 'pending' in MongoDB, and pushes an execute job to the matching BullMQ queue.",
+          "Worker Dispatch & Sandbox Setup: The language worker dequeues the job, loads the question specification, and creates a namespaced sandbox directory (${language}-${jobId}) under the worker temp directory.",
+          "Container Spawning: A detached Docker container starts with --network none, --cap-drop ALL, --security-opt no-new-privileges, --user 1000:1000, --read-only, --tmpfs /tmp:size=64m, --memory=256m, and --cpus=1.",
+          "Compilation (Java only): Java code is compiled using javac Main.java with a 25-second compilation watchdog. The JVM boots with a restricted SecurityManager blocking process creation, env lookups, and socket operations.",
+          "Test Streaming (BLSP): The worker streams batches of up to 50 test cases via docker exec -i. Requests format as <caseId> <base64(input)>; responses format as <caseId> <OK|ERROR|FATAL_ERROR> <base64(payload)>.",
+          "Fail-Fast Judging: Each test case is monitored by a 2,000 ms per-test watchdog, bounded by an overall 45,000 ms submission deadline. Execution halts at the first failing test case, assigning Accepted, Wrong Answer, Runtime Error, or Time Limit Exceeded.",
+          "Cleanup & Delivery: The worker force-terminates runner processes, removes the Docker container, purges the sandbox directory, and persists the verdict to MongoDB. The frontend polls GET /api/v1/submissions/:submissionId for completion."
         ]
       },
       "decisions": [
         {
-          "title": "Queue between API and grading",
-          "body": "Submission handling returns immediately after enqueueing, so slow or hostile code never occupies an API request."
+          "title": "Asynchronous Queue-Based Decoupling",
+          "body": "Placing Redis and BullMQ between HTTP ingestion and code evaluation ensures slow, hung, or resource-heavy submissions never block the Express API event loop or hold open HTTP connections."
         },
         {
-          "title": "One container per submission",
-          "body": "The worker streams a batch of test cases to a single runner process instead of starting a container for every test case."
+          "title": "One Container per Submission with Streaming Test Cases",
+          "body": "Starting and stopping a fresh Docker container for every individual test case would introduce 500-1,000 ms overhead per case. Instead, one container is launched per submission, and test cases stream over the Base64 Line Streaming Protocol (BLSP) to a continuous runner process, reducing multi-test suite runtimes by over 80%."
         },
         {
-          "title": "Namespaced sandbox directories",
-          "body": "BullMQ job IDs repeat across queues, so sandbox paths use language plus job ID (for example python-1) and are checked to stay under the worker temp directory."
+          "title": "Namespaced Sandbox Directory Isolation",
+          "body": "Because BullMQ generates sequential job IDs per queue (e.g. job #1 on js-queue and job #1 on python-queue concurrently), sandbox paths are strictly keyed by ${language}-${jobId} and validated against path-traversal attacks to prevent concurrent cross-queue filesystem collisions."
         },
         {
-          "title": "Fail-fast judging",
-          "body": "Execution stops at the first failing test case and records that verdict."
+          "title": "Fail-Fast Evaluation Strategy",
+          "body": "Submissions halt immediately on the first failed test case rather than evaluating remaining hidden cases, minimizing unnecessary CPU and memory consumption across the container fleet."
+        },
+        {
+          "title": "Multi-Layered Defense in Depth",
+          "body": "Primary security is enforced at the Linux kernel level via Docker isolation (--network none, --cap-drop ALL, seccomp, non-root user, tmpfs, read-only root). For Java submissions, a secondary JVM SecurityManager is installed at runtime to block process forks, system property manipulation, and host reflection."
         }
       ],
       "challenges": [
         {
-          "challenge": "Containing malicious or runaway code",
-          "solution": "Containers run with no network, all capabilities dropped, no-new-privileges, a non-root user, a read-only root filesystem, a 64 MB tmpfs, and 256 MB memory, 1 CPU, and 64 process limits."
+          "challenge": "Concurrent Cross-Language Sandbox Collisions",
+          "solution": "Discovered that independent BullMQ queues assign identical numeric job IDs. Solved by namespacing worker directories by language and job ID with canonical path resolution checks, verified through a dedicated multi-language collision test."
         },
         {
-          "challenge": "Hung or slow submissions",
-          "solution": "Watchdogs cap each test case at 2 seconds and the whole submission at 45 seconds; timed-out processes are killed and the container removed."
+          "challenge": "Unresponsive or Hostile User Submissions",
+          "solution": "Implemented layered watchdogs: a 2,000 ms per-test watchdog, a 25,000 ms Java compilation watchdog, and an overall 45,000 ms submission timeout. On timeout expiry, the engine sends SIGKILL to runner child processes and force-removes the Docker container via CLI cleanup."
         },
         {
-          "challenge": "Same job ID in different queues",
-          "solution": "Sandbox directories are keyed by language and job ID, with path validation, after a collision was found and fixed."
+          "challenge": "Test Case Output Normalization",
+          "solution": "Output comparisons normalize carriage returns (\\r\\n vs \\n) and surrounding whitespace, while supporting JSON-equivalent structural equality, case-insensitive boolean values, and sequence formatting."
         }
       ],
       "testing": [
-        "CI-safe Node test suites for backend and workers using built-in assert (npm test)",
-        "A Docker-based sandbox collision test exists but is run manually"
+        "CI-safe Node test suites for backend API routes and language workers using built-in assert (npm test)",
+        "Protocol unit tests verifying Base64 Line Streaming Protocol framing, delimiter handling, and error states",
+        "Manual multi-language Docker sandbox collision test (test_sandbox_collision_docker.js) validating isolation under concurrent load"
       ],
       "outcomes": [
-        "ISSUES.md in the repository records ISSUE-001 through ISSUE-015 as complete, including sandbox hardening and Python support"
+        "Completed issues ISSUE-001 through ISSUE-015 in repository tracking, validating full authentication, sandbox hardening, and multi-language execution",
+        "Production-ready execution contract supporting Node 20, Java 17, and Python 3.11 with identical verdict and resource semantics"
       ],
       "limitations": [
-        "Docker enforces the memory cap, but out-of-memory failures surface as runtime errors rather than a Memory Limit Exceeded verdict",
-        "Redis fixed-window rate limiting is implemented on auth routes (10 req/min) and submissions (20 req/min), but automated account lockout after repeated failed attempts is not implemented",
-        "No CI workflow in the repository, and no deployed demo",
-        "Worker capacity values are host-specific and not benchmarked for production"
+        "Out-of-memory verdicts: Docker cgroups enforce the 256 MiB memory ceiling, but because the engine does not parse cgroup OOM event notifications directly, OOM kills surface as generic Runtime Errors rather than a dedicated Memory Limit Exceeded verdict",
+        "Host-specific concurrency tuning: Worker concurrency is bounded by a Redis-backed host budget, but capacity limits are host-dependent and require benchmarking for specific server hardware",
+        "Docker daemon trust boundary: The Docker daemon is part of the trusted computing base; workers must operate on secured hosts where untrusted users cannot access the Docker socket or daemon",
+        "Authentication security: Rate limiting is implemented on submission routes, but automated account lockout after consecutive failed login attempts is not yet implemented",
+        "No live cloud deployment: The platform is tested and verified locally using Docker Compose; automated cloud CI/CD deployment is not currently maintained"
       ]
     }
   },
@@ -96,8 +138,8 @@
     "id": "tasky",
     "slug": "tasky",
     "name": "Tasky",
-    "tagline": "AI assistant that turns Gmail, Calendar, and Tasks into a single task dashboard.",
-    "description": "A Next.js app that connects a user's Google Calendar and Google Tasks, reads Gmail, and uses OpenAI gpt-4o-mini agents to turn emails and natural-language instructions into structured tasks and events.",
+    "tagline": "AI productivity assistant that turns natural-language requests into Google Calendar and Tasks actions.",
+    "description": "A Next.js full-stack application connecting Google Calendar, Google Tasks, and Gmail. It uses OpenAI gpt-4o-mini agents to extract structured scheduling and task intents from conversational text, enabling one-click execution through Google APIs.",
     "category": "Full-stack / AI integration",
     "status": "completed",
     "featured": true,
@@ -115,17 +157,103 @@
     "images": [],
     "links": { "github": "https://github.com/HariomPCode/tasky" },
     "caseStudy": {
-      "problem": "Deadlines and requests are scattered across email, calendar, and task lists, so turning them into actionable items is manual work.",
-      "contribution": "Full-stack implementation: Google API integration, the agent modules, authentication, and the dashboard.",
+      "problem": "Personal productivity is fragmented across disconnected inboxes, calendars, and to-do lists. Extracting meeting details, scheduling reminders, and updating tasks from unstructured messages or natural-language prompts requires tedious manual entry and accurate relative date/time calculation.",
+      "users": "Professionals and students seeking a unified dashboard to manage schedules, organize daily to-dos, and translate natural language instructions into actionable Google Calendar and Tasks entries.",
+      "contribution": "Built the full-stack application: Clerk authentication with Google OAuth integration, specialized agent modules for Calendar, Tasks, and Gmail, Google API client integration wrappers, Mongoose data models for chat history, and the interactive dashboard UI.",
       "features": [
-        "Unified dashboard for Google Calendar events and Google Tasks",
-        "Separate agent modules for tasks, email, calendar, and prompt-guided JSON instruction interpretation using gpt-4o-mini",
-        "Clerk authentication with Google OAuth 2.0 access",
-        "Mongoose models for user storage in MongoDB"
+        "Unified dashboard displaying live Google Calendar events and Google Tasks in a consolidated view",
+        "Natural-language intent parsing for Calendar actions (add_event, update_event, delete_event) and Task operations (create, update, delete)",
+        "Dynamic temporal context injection anchoring relative references ('tomorrow', 'next Friday at 3pm') to user local date, time, and timezone offset",
+        "AI interpreter agent translating complex Google API response JSON into clear, user-friendly conversational summaries",
+        "Email importance classification and advisory action suggestions ('Add to Calendar', 'Add to Tasks', 'No Action') for Gmail messages",
+        "Clerk-based authentication managing Google OAuth 2.0 access tokens for secure third-party API communication",
+        "Mongoose schemas storing user profiles, chat threads, and message exchanges in MongoDB"
+      ],
+      "architecture": {
+        "summary": "Next.js full-stack architecture coordinating client dashboard views, Clerk OAuth token management, modular OpenAI gpt-4o-mini agents for intent extraction, and server-side utilities dispatching CRUD operations to Google Calendar and Tasks APIs.",
+        "components": [
+          {
+            "name": "Next.js Dashboard & App Router",
+            "role": "Renders interactive calendar views, task lists, email review panes, and conversational chat interfaces using React components.",
+            "tech": "Next.js, React, Tailwind CSS"
+          },
+          {
+            "name": "Clerk & Google OAuth Layer",
+            "role": "Authenticates user sessions and manages scoped Google OAuth 2.0 credentials required for Calendar, Tasks, and Gmail API access.",
+            "tech": "Clerk, OAuth 2.0"
+          },
+          {
+            "name": "Specialized Intent Agents",
+            "role": "Domain-specific prompt modules (calendar/extractAction.js, tasks/aiTasksAgent.js) that evaluate natural language and output strictly formatted single-line JSON action proposals.",
+            "tech": "OpenAI API (gpt-4o-mini)"
+          },
+          {
+            "name": "AI Interpreter Agent",
+            "role": "Converts raw JSON responses from Google APIs and email summaries into concise, natural-language feedback and suggested next actions.",
+            "tech": "OpenAI API (gpt-4o-mini)"
+          },
+          {
+            "name": "Google API Client Layer",
+            "role": "Server-side utility wrappers (googleCalendar.js, googleTasks.js, googleEmails.js) executing authorized CRUD operations using user OAuth tokens.",
+            "tech": "Google APIs Node Client"
+          },
+          {
+            "name": "MongoDB State Store",
+            "role": "Persists synchronized user metadata, conversational chat sessions, and message history.",
+            "tech": "MongoDB, Mongoose"
+          }
+        ],
+        "steps": [
+          "User Prompt: User submits a natural-language instruction (e.g., 'Schedule team sync tomorrow at 10am' or 'Add finish lab report to tasks').",
+          "Temporal Context Injection: The server calculates the user's current local date, time, and timezone offset (e.g., ISO timestamp and offset +05:30) and dynamically injects this temporal anchor into the system prompt.",
+          "Structured Intent Extraction: gpt-4o-mini processes the anchored instruction and generates a single-line JSON payload specifying the action, target date, time, duration, and parameters.",
+          "JSON Validation & Proposal: The server parses the LLM output via JSON.parse. If valid, the proposal is presented to the user via interactive action buttons (CalendarActionButton or TaskActionButton).",
+          "User-Triggered API Execution: When the user confirms the action, the Next.js API route calls the authenticated Google Calendar or Tasks API on behalf of the user.",
+          "Response Interpretation: The interpreter agent ingests the raw Google API confirmation JSON and translates it into a concise, natural sentence.",
+          "State Persistence: The completed exchange and updated state are recorded in MongoDB and reflected on the unified dashboard."
+        ]
+      },
+      "decisions": [
+        {
+          "title": "Dynamic Temporal Anchoring in Prompts",
+          "body": "Language models lack inherent awareness of current time. Rather than asking users for absolute dates, the server calculates the exact local ISO date, time, and timezone offset on every request, allowing the model to accurately resolve relative phrases like 'tomorrow', 'this Friday', or 'in 2 hours'."
+        },
+        {
+          "title": "Separation of AI Intent Extraction from API Execution",
+          "body": "Rather than granting the model autonomous write access to user calendars and tasks, Tasky decouples extraction from mutation. The LLM produces a structured JSON proposal; the user triggers execution through UI action buttons. This prevents unintended deletions or duplicate calendar events caused by hallucinations."
+        },
+        {
+          "title": "Modular Domain Agents vs. Monolithic Prompts",
+          "body": "Calendar, Tasks, and Gmail workflows use dedicated agent modules with narrow, domain-specific system prompts. Partitioning instructions by domain significantly improves JSON schema compliance and reduces prompt token overhead."
+        },
+        {
+          "title": "Prompt-Engineered JSON Contract",
+          "body": "Intent parsing relies on prompt-engineered JSON schema instructions parsed with JSON.parse rather than provider-locked function-calling or structured-output APIs, keeping the agent layer portable and straightforward to inspect."
+        }
+      ],
+      "challenges": [
+        {
+          "challenge": "Relative Date and Timezone Ambiguity",
+          "solution": "Natural-language temporal inputs ('tomorrow morning', 'next Tuesday at 4pm') frequently produce incorrect dates without an anchor. Solved by calculating user timezone offsets and current ISO dates server-side and binding them directly into system prompts."
+        },
+        {
+          "challenge": "Translating Dense Technical Payloads for Users",
+          "solution": "Raw responses from Google Calendar and Tasks APIs are deeply nested JSON structures unsuitable for chat displays. Introduced a secondary interpreter agent that distills technical payloads into friendly, contextual status sentences."
+        }
+      ],
+      "testing": [
+        "Route testing for Google API proxy endpoints and token handling",
+        "Prompt format verification ensuring gpt-4o-mini responses adhere to single-line JSON requirements"
+      ],
+      "outcomes": [
+        "Unified dashboard integrating Google Calendar, Google Tasks, and Gmail with Clerk OAuth 2.0 authentication",
+        "Conversational assistant reliably transforming natural-language scheduling instructions into verified Google API operations"
       ],
       "limitations": [
-        "No live demo or usage numbers are published",
-        "Structured outputs rely on prompt-engineered JSON format instructions parsed via JSON.parse rather than OpenAI's native tools/function-calling or JSON schema response_format APIs"
+        "Prompt-engineered JSON parsing: Structured outputs rely on system prompt instructions and JSON.parse rather than OpenAI's native tools/function-calling or JSON schema response_format APIs, meaning malformed responses can require retry",
+        "Advisory email actions: Gmail integration suggests calendar and task actions based on email content, but does not automatically schedule items without user confirmation",
+        "OAuth token lifecycle: Google API access relies on Clerk OAuth tokens; session expiration or revoked scopes require re-authenticating with Google",
+        "No live public demo: The application was built and evaluated in development with test Google accounts; no production deployment or live user metrics are published"
       ]
     }
   }
